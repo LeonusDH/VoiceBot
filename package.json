@@ -1,0 +1,39 @@
+{
+  "name": "voicebot",
+  "version": "0.0.1",
+  "description": "Discord бот, который позволяет создавать и управлять динамически созданными голосовыми каналами",
+  "main": "src/index.ts",
+  "scripts": {
+    "start:dev": "ts-node .",
+    "start": "pm2 start dist/index.js --name=bot -o logs/bot.log -e logs/error.log --log-date-format \"DD-MM-YYYY HH:mm:ss\"",
+    "deploy": "npm i && npm run build && pm2 delete -s bot || ':' && npm run start",
+    "clean": "rimraf dist"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JoCat/VoiceBot.git"
+  },
+  "keywords": [
+    "discord",
+    "bot",
+    "voice",
+    "manage"
+  ],
+  "author": "JoCat",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/JoCat/VoiceBot/issues"
+  },
+  "homepage": "https://github.com/JoCat/VoiceBot#readme",
+  "dependencies": {
+    "discord.js": "^12.5.3",
+    "dotenv": "^10.0.0",
+    "source-map-support": "^0.5.19"
+  },
+  "devDependencies": {
+    "@types/node": "^15.12.4",
+    "rimraf": "^3.0.2",
+    "ts-node": "^10.0.0",
+    "typescript": "^4.3.4"
+  }
+}
