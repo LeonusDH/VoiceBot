@@ -1,19 +1,15 @@
 import fs from "fs";
-import path from "path";
 
 import dotenv from "dotenv";
+import FileHelper from "./FileHelper";
 dotenv.config();
 
 export default class ConfigManager {
-    private configFile = path.resolve(
-        __dirname,
-        "../../runtime/botConfig.json"
-    );
     private config: BotConfig;
     readonly botToken: string = process.env.BOT_TOKEN;
 
     constructor() {
-        if (fs.existsSync(this.configFile)) {
+        if (fs.existsSync(FileHelper.configFile)) {
             console.log("Loading configuration");
             this.load();
         } else {
@@ -28,34 +24,40 @@ export default class ConfigManager {
     }
 
     private getDefaults(): BotConfig {
-        const config = new BotConfig();
-        config.prefix = "v";
-        config.color = "#00aaff";
-        config.admins = [];
-        config.voiceChannels = [];
-        return config;
+        return {
+            prefix: "v",
+            color: "#00aaff",
+            admins: [],
+            voiceChannels: [],
+        };
     }
 
     private load(): void {
-        const config = fs.readFileSync(this.configFile);
         try {
-            this.config = JSON.parse(config.toString());
+            this.config = JSON.parse(
+                fs.readFileSync(FileHelper.configFile).toString()
+            );
         } catch (e) {
             if (e instanceof SyntaxError) {
                 console.error(
                     "Json syntax broken. Try fix or delete botConfig.json"
                 );
+            } else {
                 console.error(e);
             }
+            process.exit(1);
         }
     }
 
     private save(): void {
-        fs.writeFileSync(this.configFile, JSON.stringify(this.config, null, 4));
+        fs.writeFileSync(
+            FileHelper.configFile,
+            JSON.stringify(this.config, null, 4)
+        );
     }
 }
 
-export class BotConfig {
+export interface BotConfig {
     prefix: string;
     color: string;
     admins: string[];

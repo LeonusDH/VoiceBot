@@ -28,23 +28,19 @@ export default class Core {
             this.config.getProperty<string[]>("voiceChannels");
 
         if (voiceChannels.includes(after.channelID)) {
-            after.guild.channels
-                .create(`Комната ${after.member.user.username}`, {
+            const channel = await after.guild.channels.create(
+                `Комната ${after.member.user.username}`,
+                {
                     type: "voice",
-                    parent: (
-                        (await this.client.channels.fetch(
-                            after.channelID
-                        )) as VoiceChannel
-                    ).parent,
-                })
-                .then((channel) => {
-                    channel.createOverwrite(after.id, {
-                        VIEW_CHANNEL: true,
-                        MANAGE_CHANNELS: true,
-                        CONNECT: true,
-                    });
-                    after.setChannel(channel);
-                });
+                    parent: after.channel.parent,
+                }
+            );
+            channel.createOverwrite(after.id, {
+                VIEW_CHANNEL: true,
+                MANAGE_CHANNELS: true,
+                CONNECT: true,
+            });
+            after.setChannel(channel);
         }
 
         // Некоторая магия
@@ -54,9 +50,9 @@ export default class Core {
                 el.parent.children
                     .filter(
                         (c) =>
+                            !voiceChannels.includes(c.id) &&
                             c.type === "voice" &&
-                            c.members.size === 0 &&
-                            !voiceChannels.includes(c.id)
+                            c.members.size === 0
                     )
                     .forEach((c) => c.delete("В голосовой комнате 0 людей!"))
             );
